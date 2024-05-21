@@ -2,6 +2,10 @@
 
 ## Changelog
 
+### 2024/05/22
+- Fixed the incorrect timestamp format in the dataset. For example, corrected "2024-05-17 00:00:01 JST+0900" to "2024-05-17 00:00:01 GMT+0900 (JST)".
+
+
 ### 2024/05/21
 - The values in the XY value list were originally strings enclosed in double quotations. These double quotations were removed for easier analysis.
 - e.g. ["299.8597", "324.8683"] -> [299.8597, 324.8683]
