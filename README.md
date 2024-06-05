@@ -6,6 +6,9 @@
 
 ## Changelog
 
+### 2024/06/05
+- Fixed the character corruption issue when users open all_samples.csv in certain applications, such as Excel, by adding a BOM.
+
 ### 2024/05/22
 - Fixed the incorrect timestamp format in the dataset. For example, corrected "2024-05-17 00:00:01 JST+0900" to "2024-05-17 00:00:01 GMT+0900 (JST)".
 
