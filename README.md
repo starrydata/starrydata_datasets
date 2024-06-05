@@ -6,7 +6,7 @@
 
 ## Changelog
 
-### 2024/06/05
+### 2024/06/06
 - Fixed the character corruption issue when users open all_samples.csv in certain applications, such as Excel, by adding a BOM.
 
 ### 2024/05/22
