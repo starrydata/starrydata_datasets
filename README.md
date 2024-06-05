@@ -1,5 +1,9 @@
 # starrydata_datasets
 
+## Dataset repository
+- Before 2022/12/22: This Github repository
+- After 2022/12/22: [Figshare](https://figshare.com/projects/Starrydata_datasets/155129)
+
 ## Changelog
 
 ### 2024/05/22
