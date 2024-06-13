@@ -1,13 +1,23 @@
 # starrydata_datasets
 
-## Dataset repository
-- Before 2022/12/22: This Github repository
-- After 2022/12/22: [Figshare](https://figshare.com/projects/Starrydata_datasets/155129)
+## Dataset Repository
+
+| Repository | Availability | Update Schedule | Period |
+|------------|--------------|-----------------|--------|
+| [Github](https://github.com/starrydata/starrydata_datasets) | Past datasets available for download | - | until 2022/12/22 |
+| [Figshare](https://figshare.com/projects/Starrydata_datasets/155129) | Past datasets available for download | Daily until 2024/06/06, then monthly | from 2022/12/22 |
+| [Google Drive](https://drive.google.com/drive/folders/1OVMP7j61CJFwLtJ-qZFef9ko40Othayh) | Only the latest dataset available | Twice daily at 00:00 and 12:00 | from 2024/06/13 |
+
 
 ## Changelog
 
+### 2024/06/13
+- The latest datasets are now uploaded to Google Drive.
+
 ### 2024/06/06
 - Fixed the character corruption issue when users open all_samples.csv in certain applications, such as Excel, by adding a BOM.
+- The upload schedule to Figshare has been changed from daily to monthly.
+
 
 ### 2024/05/22
 - Fixed the incorrect timestamp format in the dataset. For example, corrected "2024-05-17 00:00:01 JST+0900" to "2024-05-17 00:00:01 GMT+0900 (JST)".
