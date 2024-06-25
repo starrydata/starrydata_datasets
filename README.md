@@ -11,6 +11,12 @@
 
 ## Changelog
 
+### 2024/06/26
+- Changed dataset file name prefix from "all" to "starrydata". For example, `all_curves.csv` is now `starrydata_curves.csv`.
+- Changed the file extension of the paper dataset from JSON to CSV for availability.
+- Reduced the columns in the paper dataset to only those necessary for citation, reducing the file size from 400MB to about 50MB.
+- Added `project_names` and `created_at` to the paper dataset.
+
 ### 2024/06/13
 - The latest datasets are now uploaded to Google Drive.
 
