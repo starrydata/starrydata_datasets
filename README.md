@@ -2,11 +2,11 @@
 
 ## Dataset Repository
 
-| Repository | Availability | Update Schedule | Period |
+| Repository | Description | Update Schedule | Period |
 |------------|--------------|-----------------|--------|
-| [Github](https://github.com/starrydata/starrydata_datasets) | Past datasets available for download | As needed | from 2019/7/11 until 2022/12/22 |
-| [Figshare](https://figshare.com/projects/Starrydata_datasets/155129) | Past datasets available for download | Daily until 2024/06/06, then monthly | from 2022/12/22 |
-| [Google Drive](https://drive.google.com/drive/folders/1OVMP7j61CJFwLtJ-qZFef9ko40Othayh) | Only the latest dataset available | Twice daily at 00:00 and 12:00 | from 2024/06/13 |
+| [Google Drive](https://drive.google.com/drive/folders/1OVMP7j61CJFwLtJ-qZFef9ko40Othayh) | Latest dataset only | Twice daily at 00:00 and 12:00 | from 2024/06/13 |
+| [Figshare](https://figshare.com/projects/Starrydata_datasets/155129) | Past datasets | Daily until 2024/06/06, then monthly | from 2022/12/22 |
+| [Github](https://github.com/starrydata/starrydata_datasets) | Past datasets | As needed | from 2019/7/11 until 2022/12/22 |
 
 
 ## Changelog
