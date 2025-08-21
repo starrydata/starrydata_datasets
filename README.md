@@ -11,6 +11,9 @@
 
 ## Changelog
 
+### 2025/08/22
+- Add figure_name field to curve dataset.
+
 ### 2024/07/04
 - Excluded datasets with the data type "calculation" in the descriptor from the sample dataset and curve dataset. As of 2024/07/01 12:00:01 UTC+0900 (JST), there were [346 samples](https://github.com/starrydata/notebook/blob/0ab26b17a8046fe480b3649d9faad325688b61e2/check_sample_datatype/check_sample_datatype.ipynb). 
 
