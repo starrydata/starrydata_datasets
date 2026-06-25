@@ -1,0 +1,86 @@
+name: Daily split & release
+
+on:
+  schedule:
+    # 03:00 JST = 18:00 UTC (Starrydata DB snapshot is 02:00 JST)
+    - cron: "0 18 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-split
+  cancel-in-progress: false
+
+env:
+  DRIVE_FILE_ID: 1py40fDLkTW2kcGx-ie7xHxG2Iqisfcuk
+
+jobs:
+  split:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r scripts/requirements.txt
+
+      - name: Download dataset from Google Drive
+        run: |
+          gdown "$DRIVE_FILE_ID" -O starrydata_dataset.zip
+          ls -lh starrydata_dataset.zip
+
+      - name: Split into per-project files
+        run: python scripts/split.py --zip starrydata_dataset.zip --out ./out
+
+      - name: Determine release tag
+        id: tag
+        run: |
+          DATE=$(date -u +%Y%m%d)
+          echo "tag=data-${DATE}" >> "$GITHUB_OUTPUT"
+          echo "name=Starrydata split ${DATE}" >> "$GITHUB_OUTPUT"
+
+      - name: Publish dated release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="${{ steps.tag.outputs.tag }}"
+          NAME="${{ steps.tag.outputs.name }}"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release delete "$TAG" --yes --cleanup-tag
+          fi
+          gh release create "$TAG" \
+            --title "$NAME" \
+            --notes "Auto-generated split of starrydata_dataset.zip ($(cat out/manifest.json | python -c 'import json,sys; print(json.load(sys.stdin)[\"db_snapshot\"])'))" \
+            out/data/*.csv.gz out/manifest.json
+
+      - name: Update 'latest' release pointer
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if gh release view latest >/dev/null 2>&1; then
+            gh release delete latest --yes --cleanup-tag
+          fi
+          gh release create latest \
+            --title "Latest split" \
+            --notes "Mirror of ${{ steps.tag.outputs.tag }}. URLs of the form /releases/latest/download/<file> always point here." \
+            out/data/*.csv.gz out/manifest.json
+
+      - name: Commit manifest.json to docs/
+        run: |
+          mkdir -p docs
+          cp out/manifest.json docs/manifest.json
+          if git diff --quiet docs/manifest.json; then
+            echo "No manifest changes"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/manifest.json
+          git commit -m "chore: update manifest.json ($(date -u +%Y-%m-%d))"
+          git push

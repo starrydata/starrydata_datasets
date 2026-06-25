@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Starrydata Datasets — daily per-project CSV downloads</title>
+<style>
+  :root {
+    --bg-0: #030812;
+    --bg-1: #0d1b3e;
+    --panel: rgba(30, 41, 59, 0.8);
+    --panel-hi: rgba(30, 41, 59, 1);
+    --border: rgba(148, 163, 184, 0.18);
+    --border-hi: rgba(96, 165, 250, 0.45);
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --accent: #60a5fa;
+    --accent-hi: #93c5fd;
+    --good: #34d399;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: radial-gradient(ellipse at 30% 30%, var(--bg-1) 0%, #060e24 40%, var(--bg-0) 100%); min-height: 100vh; color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Kaku Gothic ProN", sans-serif; }
+  body { padding: 40px 20px 60px; }
+  .wrap { max-width: 1100px; margin: 0 auto; }
+  header { text-align: center; margin-bottom: 36px; }
+  header h1 { font-size: 28px; font-weight: 700; letter-spacing: 0.5px; }
+  header p { color: var(--muted); margin-top: 8px; font-size: 14px; }
+  header a { color: var(--accent); text-decoration: none; }
+  header a:hover { color: var(--accent-hi); }
+  .meta-row { display: flex; gap: 24px; justify-content: center; margin-top: 18px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+  .meta-row b { color: var(--text); font-weight: 600; }
+  .totals { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 28px; }
+  tr.all-data-row td { background: rgba(96, 165, 250, 0.08); }
+  tr.all-data-row:hover td { background: rgba(96, 165, 250, 0.14); }
+  tr.all-data-row td.pname { color: var(--accent); }
+  .totals .stat { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 14px; text-align: center; }
+  .totals .stat .n { font-size: 22px; font-weight: 700; color: var(--accent); }
+  .totals .stat .l { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+  table { width: 100%; border-collapse: collapse; background: var(--panel); border-radius: 8px; overflow: hidden; }
+  th, td { padding: 12px 14px; font-size: 13px; border: none; vertical-align: middle; text-align: left; }
+  th { background: rgba(0,0,0,0.25); color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  tr:hover td { background: var(--panel-hi); }
+  .dl-table th, .dl-table td { text-align: center; }
+  .dl-table th:first-child, .dl-table td:first-child { text-align: left; }
+  .dl-table th:nth-child(n+2):nth-child(-n+5), .dl-table td:nth-child(n+2):nth-child(-n+5) { text-align: right; font-variant-numeric: tabular-nums; }
+  .pname { font-weight: 600; color: var(--text); }
+  .section-block { margin-top: 36px; }
+  .section-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); margin-bottom: 12px; padding-left: 4px; }
+  .repos-table td:nth-child(n+2) { color: var(--muted); }
+  .repos-table a { color: var(--accent); text-decoration: none; font-weight: 600; }
+  .repos-table a:hover { color: var(--accent-hi); }
+  .changelog-box { background: var(--panel); border-radius: 8px; padding: 4px 18px 18px; }
+  .changelog-box summary { cursor: pointer; padding: 12px 0; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; user-select: none; }
+  .changelog-box summary:hover { color: var(--text); }
+  .changelog-entry { margin-top: 14px; }
+  .changelog-entry h3 { font-size: 13px; color: var(--accent); font-weight: 600; margin-bottom: 6px; letter-spacing: 0.3px; }
+  .changelog-entry ul { list-style: disc; margin-left: 22px; color: var(--muted); font-size: 13px; line-height: 1.75; }
+  .changelog-entry ul a { color: var(--accent); text-decoration: none; }
+  .changelog-entry ul a:hover { text-decoration: underline; }
+  .changelog-entry code { background: rgba(96, 165, 250, 0.12); padding: 1px 6px; border-radius: 3px; font-size: 12px; }
+  .dl { display: flex; align-items: center; justify-content: center; gap: 4px; padding: 6px 10px; background: rgba(96, 165, 250, 0.12); border: 1px solid rgba(96, 165, 250, 0.3); border-radius: 4px; color: var(--accent); text-decoration: none; font-size: 11px; font-weight: 600; transition: all 0.15s ease; white-space: nowrap; }
+  .dl:hover { background: rgba(96, 165, 250, 0.25); border-color: var(--accent); color: var(--accent-hi); }
+  .dl .sz { font-weight: 400; color: var(--muted); font-size: 10px; }
+  .dl:hover .sz { color: var(--accent-hi); }
+  .dl-cell { min-width: 280px; }
+  .dl-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  footer { text-align: center; color: var(--muted); font-size: 12px; margin-top: 28px; }
+  footer a { color: var(--accent); text-decoration: none; }
+  .err { background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); padding: 16px; border-radius: 8px; color: #fca5a5; margin: 20px 0; }
+  .loading { text-align: center; color: var(--muted); padding: 40px; font-size: 14px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Starrydata Datasets</h1>
+    <p>Per-project CSV splits of the <a href="https://starrydata.nims.go.jp/" target="_blank" rel="noopener">Starrydata2</a> dataset, refreshed daily.</p>
+    <div class="meta-row">
+      <span>DB snapshot: <b id="snapshot">—</b></span>
+      <span>Files generated: <b id="generated">—</b></span>
+      <span><a id="repo-link" href="#" target="_blank" rel="noopener">GitHub repository</a></span>
+    </div>
+  </header>
+
+  <div id="totals" class="totals"></div>
+  <div id="content" class="loading">Loading…</div>
+
+  <section class="section-block">
+    <div class="section-label">Dataset Repositories</div>
+    <table class="repos-table">
+      <thead>
+        <tr>
+          <th>Repository</th>
+          <th>Description</th>
+          <th>Update Schedule</th>
+          <th>Period</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><a href="https://drive.google.com/drive/folders/1OVMP7j61CJFwLtJ-qZFef9ko40Othayh" target="_blank" rel="noopener">Google Drive</a></td>
+          <td>Latest dataset only</td>
+          <td>Twice daily at 00:00 and 12:00</td>
+          <td>from 2024/06/13</td>
+        </tr>
+        <tr>
+          <td><a href="https://figshare.com/projects/Starrydata_datasets/155129" target="_blank" rel="noopener">Figshare</a></td>
+          <td>Past datasets</td>
+          <td>Daily until 2024/06/06, then monthly</td>
+          <td>from 2022/12/22</td>
+        </tr>
+        <tr>
+          <td><a href="https://github.com/starrydata/starrydata_datasets" target="_blank" rel="noopener">Github</a></td>
+          <td>Past datasets</td>
+          <td>As needed</td>
+          <td>from 2019/7/11 until 2022/12/22</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="section-block">
+    <details class="changelog-box" open>
+      <summary>Changelog</summary>
+      <div class="changelog-entry">
+        <h3>2025/08/22</h3>
+        <ul><li>Add <code>figure_name</code> field to curve dataset.</li></ul>
+      </div>
+      <div class="changelog-entry">
+        <h3>2024/07/04</h3>
+        <ul><li>Excluded datasets with the data type "calculation" in the descriptor from the sample dataset and curve dataset. As of 2024/07/01 12:00:01 UTC+0900 (JST), there were <a href="https://github.com/starrydata/notebook/blob/0ab26b17a8046fe480b3649d9faad325688b61e2/check_sample_datatype/check_sample_datatype.ipynb" target="_blank" rel="noopener">346 samples</a>.</li></ul>
+      </div>
+      <div class="changelog-entry">
+        <h3>2024/06/26</h3>
+        <ul>
+          <li>Changed dataset file name prefix from "all" to "starrydata". For example, <code>all_curves.csv</code> is now <code>starrydata_curves.csv</code>.</li>
+          <li>Changed the file extension of the paper dataset from JSON to CSV for availability.</li>
+          <li>Reduced the columns in the paper dataset to only those necessary for citation, reducing the file size from 400MB to about 50MB.</li>
+          <li>Added <code>project_names</code> and <code>created_at</code> to the paper dataset.</li>
+        </ul>
+      </div>
+      <div class="changelog-entry">
+        <h3>2024/06/13</h3>
+        <ul><li>The latest datasets are now uploaded to Google Drive.</li></ul>
+      </div>
+      <div class="changelog-entry">
+        <h3>2024/06/06</h3>
+        <ul>
+          <li>Fixed the character corruption issue when users open <code>all_samples.csv</code> in certain applications, such as Excel, by adding a BOM.</li>
+          <li>The upload schedule to Figshare has been changed from daily to monthly.</li>
+        </ul>
+      </div>
+      <div class="changelog-entry">
+        <h3>2024/05/22</h3>
+        <ul><li>Fixed the incorrect timestamp format in the dataset. For example, corrected <code>"2024-05-17 00:00:01 JST+0900"</code> to <code>"2024-05-17 00:00:01 GMT+0900 (JST)"</code>.</li></ul>
+      </div>
+      <div class="changelog-entry">
+        <h3>2024/05/21</h3>
+        <ul>
+          <li>The values in the XY value list were originally strings enclosed in double quotations. These double quotations were removed for easier analysis.</li>
+          <li>e.g. <code>["299.8597", "324.8683"]</code> → <code>[299.8597, 324.8683]</code></li>
+        </ul>
+      </div>
+      <div class="changelog-entry">
+        <h3>2024/05/16</h3>
+        <ul><li>Added <code>updated_at</code>, <code>created_at</code>, and <code>composition_details</code> to <code>all_samples.csv</code>.</li></ul>
+      </div>
+      <div class="changelog-entry">
+        <h3>2022/12/22</h3>
+        <ul><li>The dataset location was changed from this GitHub repository to <a href="https://figshare.com/projects/Starrydata_datasets/155129" target="_blank" rel="noopener">Figshare</a>.</li></ul>
+      </div>
+    </details>
+  </section>
+
+  <footer>
+    Source: <a href="https://drive.google.com/drive/folders/1OVMP7j61CJFwLtJ-qZFef9ko40Othayh" target="_blank" rel="noopener">official Starrydata Google Drive</a> ·
+    Counts API: <a href="https://starrydata.github.io/json/counts.json" target="_blank" rel="noopener">starrydata.github.io</a> ·
+    CSV format: gzipped (open with pandas <code>pd.read_csv(..., compression='gzip')</code> or Excel after decompression)
+  </footer>
+</div>
+
+<script>
+  // ─── Configuration ────────────────────────────────────────────────
+  // Set after the repo is created. Both the GitHub release URLs and the
+  // header link in the page derive from these two values.
+  const REPO_OWNER = "starrydata";
+  const REPO_NAME = "starrydata_datasets";
+
+  const COUNTS_URL = "https://starrydata.github.io/json/counts.json";
+  const MANIFEST_URL = "./manifest.json";
+  const RELEASE_BASE = `https://github.com/${REPO_OWNER}/${REPO_NAME}/releases/latest/download`;
+  const REPO_URL = `https://github.com/${REPO_OWNER}/${REPO_NAME}`;
+
+  document.getElementById("repo-link").href = REPO_URL;
+
+  // ─── Helpers ──────────────────────────────────────────────────────
+  const fmtNum = (n) => n.toLocaleString("en-US");
+  const fmtBytes = (b) => {
+    if (b == null) return "";
+    if (b < 1024) return `${b} B`;
+    if (b < 1024 * 1024) return `${(b / 1024).toFixed(0)} KB`;
+    return `${(b / 1024 / 1024).toFixed(1)} MB`;
+  };
+  const TZ_LIST = [
+    { tz: "UTC", label: "UTC" },
+    { tz: "Asia/Tokyo", label: "JST" },
+  ];
+  const fmtInTZ = (d, tz) => {
+    const parts = new Intl.DateTimeFormat("en-CA", {
+      timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit",
+      hour: "2-digit", minute: "2-digit", hour12: false,
+    }).formatToParts(d);
+    const g = (t) => parts.find((p) => p.type === t).value;
+    return `${g("year")}-${g("month")}-${g("day")} ${g("hour")}:${g("minute")}`;
+  };
+  const fmtDate = (input) => {
+    if (!input) return "—";
+    // Accept both ISO ("2026-06-25T05:41:04+00:00")
+    // and snapshot strings ("2026-06-25 02:00:01 UTC+0900 (JST)").
+    const normalized = String(input).replace(
+      /UTC([+-])(\d{2})(\d{2}).*/, (_, s, h, m) => `${s}${h}:${m}`
+    );
+    const d = new Date(normalized);
+    if (isNaN(d)) return input;
+    return TZ_LIST.map(({ tz, label }) => `${fmtInTZ(d, tz)} ${label}`).join(" · ");
+  };
+
+  // ─── Render ───────────────────────────────────────────────────────
+  function allDlButton(kind, manifest) {
+    const meta = manifest?.all_data?.[kind];
+    if (!meta) return `<span class="dl" style="opacity:0.3" title="not yet built">all_${kind}</span>`;
+    const url = `${RELEASE_BASE}/${meta.filename}`;
+    return `<a class="dl" href="${url}" title="${meta.rows.toLocaleString()} rows, sha256:${meta.sha256.slice(0,12)}…">all_${kind}<span class="sz">${fmtBytes(meta.bytes)}</span></a>`;
+  }
+
+  function allDataRow(counts, manifest) {
+    return `
+      <tr class="all-data-row">
+        <td class="pname">All projects (whole dataset)</td>
+        <td>${fmtNum(counts.papers ?? 0)}</td>
+        <td>${fmtNum(counts.figures ?? 0)}</td>
+        <td>${fmtNum(counts.samples ?? 0)}</td>
+        <td>${fmtNum(counts.curves ?? 0)}</td>
+        <td class="dl-cell"><div class="dl-grid">${allDlButton("papers", manifest)}${allDlButton("samples", manifest)}${allDlButton("curves", manifest)}</div></td>
+      </tr>
+    `;
+  }
+
+  function renderTotals(counts) {
+    const html = ["papers", "figures", "samples", "curves"].map((k) =>
+      `<div class="stat"><div class="n">${fmtNum(counts[k] ?? 0)}</div><div class="l">${k}</div></div>`
+    ).join("");
+    document.getElementById("totals").innerHTML = html;
+  }
+
+  function dlButton(project, kind, manifest) {
+    const proj = manifest?.projects?.[project];
+    const meta = proj?.[kind];
+    if (!meta) return `<span class="dl" style="opacity:0.3" title="not yet built">${kind}</span>`;
+    const url = `${RELEASE_BASE}/${meta.filename}`;
+    return `<a class="dl" href="${url}" title="${meta.rows.toLocaleString()} rows, sha256:${meta.sha256.slice(0,12)}…">${kind}<span class="sz">${fmtBytes(meta.bytes)}</span></a>`;
+  }
+
+  function renderTable(counts, manifest) {
+    // Sort by curves desc, but keep Battery-family projects adjacent
+    // (anchored to the largest battery's natural position).
+    const isBattery = (n) => /Battery/.test(n);
+    const all = Object.entries(counts.projects ?? {});
+    const batteryCurves = all.filter(([n]) => isBattery(n)).map(([, c]) => c.curves ?? 0);
+    const batteryAnchor = batteryCurves.length ? Math.max(...batteryCurves) : -Infinity;
+    const keyOf = ([name, c]) => isBattery(name) ? batteryAnchor : (c.curves ?? 0);
+    const projects = all.sort((a, b) => {
+      const diff = keyOf(b) - keyOf(a);
+      return diff !== 0 ? diff : (b[1].curves ?? 0) - (a[1].curves ?? 0);
+    });
+
+    const rows = projects.map(([name, c]) => `
+      <tr>
+        <td class="pname">${name}</td>
+        <td>${fmtNum(c.papers ?? 0)}</td>
+        <td>${fmtNum(c.figures ?? 0)}</td>
+        <td>${fmtNum(c.samples ?? 0)}</td>
+        <td>${fmtNum(c.curves ?? 0)}</td>
+        <td class="dl-cell"><div class="dl-grid">${dlButton(name, "papers", manifest)}${dlButton(name, "samples", manifest)}${dlButton(name, "curves", manifest)}</div></td>
+      </tr>
+    `).join("");
+
+    document.getElementById("content").outerHTML = `
+      <table class="dl-table">
+        <thead>
+          <tr>
+            <th>Project</th><th>Papers</th><th>Figures</th><th>Samples</th><th>Curves</th><th>Download</th>
+          </tr>
+        </thead>
+        <tbody>${allDataRow(counts, manifest)}${rows}</tbody>
+      </table>
+    `;
+  }
+
+  async function fetchJSON(url) {
+    const r = await fetch(url, { cache: "no-cache" });
+    if (!r.ok) throw new Error(`${url} → HTTP ${r.status}`);
+    return r.json();
+  }
+
+  (async function () {
+    try {
+      const [counts, manifest] = await Promise.all([
+        fetchJSON(COUNTS_URL),
+        fetchJSON(MANIFEST_URL).catch(() => ({ projects: {} })),
+      ]);
+      renderTotals(counts);
+      renderTable(counts, manifest);
+      document.getElementById("snapshot").textContent = fmtDate(manifest.db_snapshot);
+      document.getElementById("generated").textContent = fmtDate(manifest.generated_at);
+    } catch (e) {
+      document.getElementById("content").outerHTML =
+        `<div class="err">Failed to load: ${e.message}</div>`;
+    }
+  })();
+</script>
+</body>
+</html>
