@@ -27,8 +27,9 @@
   header p { color: var(--muted); margin-top: 8px; font-size: 14px; }
   header a { color: var(--accent); text-decoration: none; }
   header a:hover { color: var(--accent-hi); }
-  .meta-row { display: flex; gap: 24px; justify-content: center; margin-top: 18px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+  .meta-row { display: flex; gap: 24px; justify-content: center; align-items: center; margin-top: 18px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
   .meta-row b { color: var(--text); font-weight: 600; }
+  .meta-row .gh-star { display: inline-flex; align-items: center; min-height: 28px; }
   .totals { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 28px; }
   tr.all-data-row td { background: rgba(96, 165, 250, 0.08); }
   tr.all-data-row:hover td { background: rgba(96, 165, 250, 0.14); }
@@ -78,6 +79,7 @@
   .stale-banner a { color: #fbbf24; font-weight: 600; text-decoration: none; }
   .stale-banner a:hover { color: #fde68a; text-decoration: underline; }
 </style>
+<script async defer src="https://buttons.github.io/buttons.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -87,7 +89,14 @@
     <div class="meta-row">
       <span>DB snapshot: <b id="snapshot">—</b></span>
       <span>Files generated: <b id="generated">—</b></span>
-      <span><a id="repo-link" href="#" target="_blank" rel="noopener">GitHub repository</a></span>
+      <span class="gh-star">
+        <a class="github-button"
+           href="https://github.com/starrydata/starrydata_datasets"
+           data-icon="octicon-star"
+           data-size="large"
+           data-show-count="true"
+           aria-label="Star starrydata/starrydata_datasets on GitHub">Star</a>
+      </span>
     </div>
   </header>
 
@@ -183,9 +192,7 @@
   </section>
 
   <footer>
-    Source: <a href="https://drive.google.com/drive/folders/1OVMP7j61CJFwLtJ-qZFef9ko40Othayh" target="_blank" rel="noopener">official Starrydata Google Drive</a> ·
-    Counts API: <a href="https://starrydata.github.io/json/counts.json" target="_blank" rel="noopener">starrydata.github.io</a> ·
-    CSV format: gzipped (open with pandas <code>pd.read_csv(..., compression='gzip')</code> or Excel after decompression)
+    © Starrydata Project · <a href="https://github.com/starrydata/starrydata_datasets" target="_blank" rel="noopener">starrydata/starrydata_datasets</a>
   </footer>
 </div>
 
@@ -200,8 +207,6 @@
   const MANIFEST_URL = "./manifest.json";
   const RELEASE_BASE = `https://github.com/${REPO_OWNER}/${REPO_NAME}/releases/latest/download`;
   const REPO_URL = `https://github.com/${REPO_OWNER}/${REPO_NAME}`;
-
-  document.getElementById("repo-link").href = REPO_URL;
 
   // ─── Helpers ──────────────────────────────────────────────────────
   const fmtNum = (n) => n.toLocaleString("en-US");
