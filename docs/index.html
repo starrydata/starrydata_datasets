@@ -33,6 +33,11 @@
   tr.all-data-row td { background: rgba(96, 165, 250, 0.08); }
   tr.all-data-row:hover td { background: rgba(96, 165, 250, 0.14); }
   tr.all-data-row td.pname { color: var(--accent); }
+  tr.all-data-row .dl-grid { grid-template-columns: repeat(4, 1fr); min-width: 360px; }
+  .dl-drive { background: rgba(245, 158, 11, 0.12); border-color: rgba(245, 158, 11, 0.4); color: #fbbf24; }
+  .dl-drive:hover { background: rgba(245, 158, 11, 0.22); border-color: #fbbf24; color: #fde68a; }
+  .dl-drive .sz { color: rgba(251, 191, 36, 0.7); }
+  .dl-drive:hover .sz { color: #fde68a; }
   .totals .stat { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 14px; text-align: center; }
   .totals .stat .n { font-size: 22px; font-weight: 700; color: var(--accent); }
   .totals .stat .l { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
@@ -261,6 +266,7 @@
   }
 
   function allDataRow(counts, manifest) {
+    const driveBtn = `<a class="dl dl-drive" href="${DRIVE_URL}" target="_blank" rel="noopener" title="Always-current full zip mirrored from the official Starrydata Google Drive">Drive zip<span class="sz">always fresh</span></a>`;
     return `
       <tr class="all-data-row">
         <td class="pname">All projects (whole dataset)</td>
@@ -268,7 +274,7 @@
         <td>${fmtNum(counts.figures ?? 0)}</td>
         <td>${fmtNum(counts.samples ?? 0)}</td>
         <td>${fmtNum(counts.curves ?? 0)}</td>
-        <td class="dl-cell"><div class="dl-grid">${allDlButton("papers", manifest)}${allDlButton("samples", manifest)}${allDlButton("curves", manifest)}</div></td>
+        <td class="dl-cell"><div class="dl-grid">${allDlButton("papers", manifest)}${allDlButton("samples", manifest)}${allDlButton("curves", manifest)}${driveBtn}</div></td>
       </tr>
     `;
   }
