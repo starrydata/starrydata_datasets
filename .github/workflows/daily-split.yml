@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: write
+  issues: write
 
 concurrency:
   group: daily-split
@@ -84,3 +85,37 @@ jobs:
           git add docs/manifest.json
           git commit -m "chore: update manifest.json ($(date -u +%Y-%m-%d))"
           git push
+
+      - name: Open or update issue on failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TITLE="Daily split pipeline failed"
+          RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          DRIVE_URL="https://drive.google.com/drive/folders/1OVMP7j61CJFwLtJ-qZFef9ko40Othayh"
+          EXISTING=$(gh issue list --state open --json number,title --jq '.[] | select(.title=="'"$TITLE"'") | .number' | head -1)
+          if [ -n "$EXISTING" ]; then
+            gh issue comment "$EXISTING" --body "Another failure on $(date -u +%Y-%m-%d): $RUN_URL"
+          else
+            gh issue create --title "$TITLE" --body "The \`Daily split & release\` workflow failed and the per-project files at \`/releases/latest/\` are now stale.
+
+          - First failed run: $RUN_URL
+          - Date (UTC): $(date -u +%Y-%m-%dT%H:%M:%SZ)
+          - Trigger: ${{ github.event_name }}
+
+          The latest dataset is still available from the [official Google Drive]($DRIVE_URL) while this is being investigated.
+
+          This issue will auto-close on the next successful run."
+          fi
+
+      - name: Close failure issues on success
+        if: success()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TITLE="Daily split pipeline failed"
+          RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          for n in $(gh issue list --state open --json number,title --jq '.[] | select(.title=="'"$TITLE"'") | .number'); do
+            gh issue close "$n" --comment "Pipeline succeeded again: $RUN_URL"
+          done
