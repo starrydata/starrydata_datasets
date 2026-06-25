@@ -156,6 +156,13 @@
     <details class="changelog-box" open>
       <summary>Changelog</summary>
       <div class="changelog-entry">
+        <h3>2026/06/26</h3>
+        <ul>
+          <li>Added per-project dataset downloads at <a href="https://starrydata.github.io/starrydata_datasets/" target="_blank" rel="noopener">starrydata.github.io/starrydata_datasets</a>. Each project (<code>ThermoelectricMaterials</code>, <code>BatteryMaterials</code>, <code>MagneticMaterials</code>, etc.) can now be downloaded separately as <code>papers</code> / <code>samples</code> / <code>curves</code> files, alongside the full unsplit dataset.</li>
+          <li>Compressed all downloads as gzipped CSV (<code>.csv.gz</code>) to reduce file size. Load directly with <code>pandas.read_csv(url, compression="gzip")</code> or decompress before opening in Excel.</li>
+        </ul>
+      </div>
+      <div class="changelog-entry">
         <h3>2025/08/22</h3>
         <ul><li>Add <code>figure_name</code> field to curve dataset.</li></ul>
       </div>

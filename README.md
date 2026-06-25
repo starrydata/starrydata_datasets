@@ -11,6 +11,10 @@
 
 ## Changelog
 
+### 2026/06/26
+- Added per-project dataset downloads at https://starrydata.github.io/starrydata_datasets/. Each project (ThermoelectricMaterials, BatteryMaterials, MagneticMaterials, etc.) can now be downloaded separately as `papers` / `samples` / `curves` files, alongside the full unsplit dataset.
+- Compressed all downloads as gzipped CSV (`.csv.gz`) to reduce file size. Load directly with `pandas.read_csv(url, compression="gzip")` or decompress before opening in Excel.
+
 ### 2025/08/22
 - Add figure_name field to curve dataset.
 
