@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Starrydata Datasets — daily per-project CSV downloads</title>
+<style>
+  :root {
+    --bg-0: #030812;
+    --bg-1: #0d1b3e;
+    --panel: rgba(30, 41, 59, 0.8);
+    --panel-hi: rgba(30, 41, 59, 1);
+    --border: rgba(148, 163, 184, 0.18);
+    --border-hi: rgba(96, 165, 250, 0.45);
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --accent: #60a5fa;
+    --accent-hi: #93c5fd;
+    --good: #34d399;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: radial-gradient(ellipse at 30% 30%, var(--bg-1) 0%, #060e24 40%, var(--bg-0) 100%); min-height: 100vh; color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Kaku Gothic ProN", sans-serif; }
+  body { padding: 40px 20px 60px; }
+  .wrap { max-width: 1100px; margin: 0 auto; }
+  header { text-align: center; margin-bottom: 36px; }
+  header h1 { font-size: 28px; font-weight: 700; letter-spacing: 0.5px; }
+  header p { color: var(--muted); margin-top: 8px; font-size: 14px; }
+  header a { color: var(--accent); text-decoration: none; }
+  header a:hover { color: var(--accent-hi); }
+  .meta-row { display: flex; gap: 24px; justify-content: center; margin-top: 18px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+  .meta-row b { color: var(--text); font-weight: 600; }
+  .totals { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 28px; }
+  tr.all-data-row td { background: rgba(96, 165, 250, 0.08); }
+  tr.all-data-row:hover td { background: rgba(96, 165, 250, 0.14); }
+  tr.all-data-row td.pname { color: var(--accent); }
+  .totals .stat { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 14px; text-align: center; }
+  .totals .stat .n { font-size: 22px; font-weight: 700; color: var(--accent); }
+  .totals .stat .l { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+  table { width: 100%; border-collapse: collapse; background: var(--panel); border-radius: 8px; overflow: hidden; }
+  th, td { padding: 12px 14px; text-align: center; font-size: 13px; border: none; vertical-align: middle; }
+  th:first-child, td:first-child { text-align: left; }
+  th:nth-child(n+2):nth-child(-n+5), td:nth-child(n+2):nth-child(-n+5) { text-align: right; font-variant-numeric: tabular-nums; }
+  th { background: rgba(0,0,0,0.25); color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  tr:hover td { background: var(--panel-hi); }
+  .pname { font-weight: 600; color: var(--text); }
+  .dl { display: flex; align-items: center; justify-content: center; gap: 4px; padding: 6px 10px; background: rgba(96, 165, 250, 0.12); border: 1px solid rgba(96, 165, 250, 0.3); border-radius: 4px; color: var(--accent); text-decoration: none; font-size: 11px; font-weight: 600; transition: all 0.15s ease; white-space: nowrap; }
+  .dl:hover { background: rgba(96, 165, 250, 0.25); border-color: var(--accent); color: var(--accent-hi); }
+  .dl .sz { font-weight: 400; color: var(--muted); font-size: 10px; }
+  .dl:hover .sz { color: var(--accent-hi); }
+  .dl-cell { min-width: 280px; }
+  .dl-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  footer { text-align: center; color: var(--muted); font-size: 12px; margin-top: 28px; }
+  footer a { color: var(--accent); text-decoration: none; }
+  .err { background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); padding: 16px; border-radius: 8px; color: #fca5a5; margin: 20px 0; }
+  .loading { text-align: center; color: var(--muted); padding: 40px; font-size: 14px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Starrydata Datasets</h1>
+    <p>Per-project CSV splits of the <a href="https://starrydata.nims.go.jp/" target="_blank" rel="noopener">Starrydata2</a> dataset, refreshed daily.</p>
+    <div class="meta-row">
+      <span>DB snapshot: <b id="snapshot">—</b></span>
+      <span>Files generated: <b id="generated">—</b></span>
+      <span><a id="repo-link" href="#" target="_blank" rel="noopener">GitHub repository</a></span>
+    </div>
+  </header>
+
+  <div id="totals" class="totals"></div>
+  <div id="content" class="loading">Loading…</div>
+
+  <footer>
+    Source: <a href="https://drive.google.com/drive/folders/1OVMP7j61CJFwLtJ-qZFef9ko40Othayh" target="_blank" rel="noopener">official Starrydata Google Drive</a> ·
+    Counts API: <a href="https://starrydata.github.io/json/counts.json" target="_blank" rel="noopener">starrydata.github.io</a> ·
+    CSV format: gzipped (open with pandas <code>pd.read_csv(..., compression='gzip')</code> or Excel after decompression)
+  </footer>
+</div>
+
+<script>
+  // ─── Configuration ────────────────────────────────────────────────
+  // Set after the repo is created. Both the GitHub release URLs and the
+  // header link in the page derive from these two values.
+  const REPO_OWNER = "starrydata";
+  const REPO_NAME = "starrydata_datasets";
+
+  const COUNTS_URL = "https://starrydata.github.io/json/counts.json";
+  const MANIFEST_URL = "./manifest.json";
+  const RELEASE_BASE = `https://github.com/${REPO_OWNER}/${REPO_NAME}/releases/latest/download`;
+  const REPO_URL = `https://github.com/${REPO_OWNER}/${REPO_NAME}`;
+
+  document.getElementById("repo-link").href = REPO_URL;
+
+  // ─── Helpers ──────────────────────────────────────────────────────
+  const fmtNum = (n) => n.toLocaleString("en-US");
+  const fmtBytes = (b) => {
+    if (b == null) return "";
+    if (b < 1024) return `${b} B`;
+    if (b < 1024 * 1024) return `${(b / 1024).toFixed(0)} KB`;
+    return `${(b / 1024 / 1024).toFixed(1)} MB`;
+  };
+  const TZ_LIST = [
+    { tz: "UTC", label: "UTC" },
+    { tz: "Asia/Tokyo", label: "JST" },
+  ];
+  const fmtInTZ = (d, tz) => {
+    const parts = new Intl.DateTimeFormat("en-CA", {
+      timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit",
+      hour: "2-digit", minute: "2-digit", hour12: false,
+    }).formatToParts(d);
+    const g = (t) => parts.find((p) => p.type === t).value;
+    return `${g("year")}-${g("month")}-${g("day")} ${g("hour")}:${g("minute")}`;
+  };
+  const fmtDate = (input) => {
+    if (!input) return "—";
+    // Accept both ISO ("2026-06-25T05:41:04+00:00")
+    // and snapshot strings ("2026-06-25 02:00:01 UTC+0900 (JST)").
+    const normalized = String(input).replace(
+      /UTC([+-])(\d{2})(\d{2}).*/, (_, s, h, m) => `${s}${h}:${m}`
+    );
+    const d = new Date(normalized);
+    if (isNaN(d)) return input;
+    return TZ_LIST.map(({ tz, label }) => `${fmtInTZ(d, tz)} ${label}`).join(" · ");
+  };
+
+  // ─── Render ───────────────────────────────────────────────────────
+  function allDlButton(kind, manifest) {
+    const meta = manifest?.all_data?.[kind];
+    if (!meta) return `<span class="dl" style="opacity:0.3" title="not yet built">all_${kind}</span>`;
+    const url = `${RELEASE_BASE}/${meta.filename}`;
+    return `<a class="dl" href="${url}" title="${meta.rows.toLocaleString()} rows, sha256:${meta.sha256.slice(0,12)}…">all_${kind}<span class="sz">${fmtBytes(meta.bytes)}</span></a>`;
+  }
+
+  function allDataRow(counts, manifest) {
+    return `
+      <tr class="all-data-row">
+        <td class="pname">All projects (whole dataset)</td>
+        <td>${fmtNum(counts.papers ?? 0)}</td>
+        <td>${fmtNum(counts.figures ?? 0)}</td>
+        <td>${fmtNum(counts.samples ?? 0)}</td>
+        <td>${fmtNum(counts.curves ?? 0)}</td>
+        <td class="dl-cell"><div class="dl-grid">${allDlButton("papers", manifest)}${allDlButton("samples", manifest)}${allDlButton("curves", manifest)}</div></td>
+      </tr>
+    `;
+  }
+
+  function renderTotals(counts) {
+    const html = ["papers", "figures", "samples", "curves"].map((k) =>
+      `<div class="stat"><div class="n">${fmtNum(counts[k] ?? 0)}</div><div class="l">${k}</div></div>`
+    ).join("");
+    document.getElementById("totals").innerHTML = html;
+  }
+
+  function dlButton(project, kind, manifest) {
+    const proj = manifest?.projects?.[project];
+    const meta = proj?.[kind];
+    if (!meta) return `<span class="dl" style="opacity:0.3" title="not yet built">${kind}</span>`;
+    const url = `${RELEASE_BASE}/${meta.filename}`;
+    return `<a class="dl" href="${url}" title="${meta.rows.toLocaleString()} rows, sha256:${meta.sha256.slice(0,12)}…">${kind}<span class="sz">${fmtBytes(meta.bytes)}</span></a>`;
+  }
+
+  function renderTable(counts, manifest) {
+    // Sort by curves desc, but keep Battery-family projects adjacent
+    // (anchored to the largest battery's natural position).
+    const isBattery = (n) => /Battery/.test(n);
+    const all = Object.entries(counts.projects ?? {});
+    const batteryCurves = all.filter(([n]) => isBattery(n)).map(([, c]) => c.curves ?? 0);
+    const batteryAnchor = batteryCurves.length ? Math.max(...batteryCurves) : -Infinity;
+    const keyOf = ([name, c]) => isBattery(name) ? batteryAnchor : (c.curves ?? 0);
+    const projects = all.sort((a, b) => {
+      const diff = keyOf(b) - keyOf(a);
+      return diff !== 0 ? diff : (b[1].curves ?? 0) - (a[1].curves ?? 0);
+    });
+
+    const rows = projects.map(([name, c]) => `
+      <tr>
+        <td class="pname">${name}</td>
+        <td>${fmtNum(c.papers ?? 0)}</td>
+        <td>${fmtNum(c.figures ?? 0)}</td>
+        <td>${fmtNum(c.samples ?? 0)}</td>
+        <td>${fmtNum(c.curves ?? 0)}</td>
+        <td class="dl-cell"><div class="dl-grid">${dlButton(name, "papers", manifest)}${dlButton(name, "samples", manifest)}${dlButton(name, "curves", manifest)}</div></td>
+      </tr>
+    `).join("");
+
+    document.getElementById("content").outerHTML = `
+      <table>
+        <thead>
+          <tr>
+            <th>Project</th><th>Papers</th><th>Figures</th><th>Samples</th><th>Curves</th><th>Download</th>
+          </tr>
+        </thead>
+        <tbody>${allDataRow(counts, manifest)}${rows}</tbody>
+      </table>
+    `;
+  }
+
+  async function fetchJSON(url) {
+    const r = await fetch(url, { cache: "no-cache" });
+    if (!r.ok) throw new Error(`${url} → HTTP ${r.status}`);
+    return r.json();
+  }
+
+  (async function () {
+    try {
+      const [counts, manifest] = await Promise.all([
+        fetchJSON(COUNTS_URL),
+        fetchJSON(MANIFEST_URL).catch(() => ({ projects: {} })),
+      ]);
+      renderTotals(counts);
+      renderTable(counts, manifest);
+      document.getElementById("snapshot").textContent = fmtDate(manifest.db_snapshot);
+      document.getElementById("generated").textContent = fmtDate(manifest.generated_at);
+    } catch (e) {
+      document.getElementById("content").outerHTML =
+        `<div class="err">Failed to load: ${e.message}</div>`;
+    }
+  })();
+</script>
+</body>
+</html>
