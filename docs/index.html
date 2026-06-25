@@ -37,12 +37,27 @@
   .totals .stat .n { font-size: 22px; font-weight: 700; color: var(--accent); }
   .totals .stat .l { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
   table { width: 100%; border-collapse: collapse; background: var(--panel); border-radius: 8px; overflow: hidden; }
-  th, td { padding: 12px 14px; text-align: center; font-size: 13px; border: none; vertical-align: middle; }
-  th:first-child, td:first-child { text-align: left; }
-  th:nth-child(n+2):nth-child(-n+5), td:nth-child(n+2):nth-child(-n+5) { text-align: right; font-variant-numeric: tabular-nums; }
+  th, td { padding: 12px 14px; font-size: 13px; border: none; vertical-align: middle; text-align: left; }
   th { background: rgba(0,0,0,0.25); color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
   tr:hover td { background: var(--panel-hi); }
+  .dl-table th, .dl-table td { text-align: center; }
+  .dl-table th:first-child, .dl-table td:first-child { text-align: left; }
+  .dl-table th:nth-child(n+2):nth-child(-n+5), .dl-table td:nth-child(n+2):nth-child(-n+5) { text-align: right; font-variant-numeric: tabular-nums; }
   .pname { font-weight: 600; color: var(--text); }
+  .section-block { margin-top: 36px; }
+  .section-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); margin-bottom: 12px; padding-left: 4px; }
+  .repos-table td:nth-child(n+2) { color: var(--muted); }
+  .repos-table a { color: var(--accent); text-decoration: none; font-weight: 600; }
+  .repos-table a:hover { color: var(--accent-hi); }
+  .changelog-box { background: var(--panel); border-radius: 8px; padding: 4px 18px 18px; }
+  .changelog-box summary { cursor: pointer; padding: 12px 0; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; user-select: none; }
+  .changelog-box summary:hover { color: var(--text); }
+  .changelog-entry { margin-top: 14px; }
+  .changelog-entry h3 { font-size: 13px; color: var(--accent); font-weight: 600; margin-bottom: 6px; letter-spacing: 0.3px; }
+  .changelog-entry ul { list-style: disc; margin-left: 22px; color: var(--muted); font-size: 13px; line-height: 1.75; }
+  .changelog-entry ul a { color: var(--accent); text-decoration: none; }
+  .changelog-entry ul a:hover { text-decoration: underline; }
+  .changelog-entry code { background: rgba(96, 165, 250, 0.12); padding: 1px 6px; border-radius: 3px; font-size: 12px; }
   .dl { display: flex; align-items: center; justify-content: center; gap: 4px; padding: 6px 10px; background: rgba(96, 165, 250, 0.12); border: 1px solid rgba(96, 165, 250, 0.3); border-radius: 4px; color: var(--accent); text-decoration: none; font-size: 11px; font-weight: 600; transition: all 0.15s ease; white-space: nowrap; }
   .dl:hover { background: rgba(96, 165, 250, 0.25); border-color: var(--accent); color: var(--accent-hi); }
   .dl .sz { font-weight: 400; color: var(--muted); font-size: 10px; }
@@ -69,6 +84,93 @@
 
   <div id="totals" class="totals"></div>
   <div id="content" class="loading">Loading…</div>
+
+  <section class="section-block">
+    <div class="section-label">Dataset Repositories</div>
+    <table class="repos-table">
+      <thead>
+        <tr>
+          <th>Repository</th>
+          <th>Description</th>
+          <th>Update Schedule</th>
+          <th>Period</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><a href="https://drive.google.com/drive/folders/1OVMP7j61CJFwLtJ-qZFef9ko40Othayh" target="_blank" rel="noopener">Google Drive</a></td>
+          <td>Latest dataset only</td>
+          <td>Twice daily at 00:00 and 12:00</td>
+          <td>from 2024/06/13</td>
+        </tr>
+        <tr>
+          <td><a href="https://figshare.com/projects/Starrydata_datasets/155129" target="_blank" rel="noopener">Figshare</a></td>
+          <td>Past datasets</td>
+          <td>Daily until 2024/06/06, then monthly</td>
+          <td>from 2022/12/22</td>
+        </tr>
+        <tr>
+          <td><a href="https://github.com/starrydata/starrydata_datasets" target="_blank" rel="noopener">Github</a></td>
+          <td>Past datasets</td>
+          <td>As needed</td>
+          <td>from 2019/7/11 until 2022/12/22</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="section-block">
+    <details class="changelog-box" open>
+      <summary>Changelog</summary>
+      <div class="changelog-entry">
+        <h3>2025/08/22</h3>
+        <ul><li>Add <code>figure_name</code> field to curve dataset.</li></ul>
+      </div>
+      <div class="changelog-entry">
+        <h3>2024/07/04</h3>
+        <ul><li>Excluded datasets with the data type "calculation" in the descriptor from the sample dataset and curve dataset. As of 2024/07/01 12:00:01 UTC+0900 (JST), there were <a href="https://github.com/starrydata/notebook/blob/0ab26b17a8046fe480b3649d9faad325688b61e2/check_sample_datatype/check_sample_datatype.ipynb" target="_blank" rel="noopener">346 samples</a>.</li></ul>
+      </div>
+      <div class="changelog-entry">
+        <h3>2024/06/26</h3>
+        <ul>
+          <li>Changed dataset file name prefix from "all" to "starrydata". For example, <code>all_curves.csv</code> is now <code>starrydata_curves.csv</code>.</li>
+          <li>Changed the file extension of the paper dataset from JSON to CSV for availability.</li>
+          <li>Reduced the columns in the paper dataset to only those necessary for citation, reducing the file size from 400MB to about 50MB.</li>
+          <li>Added <code>project_names</code> and <code>created_at</code> to the paper dataset.</li>
+        </ul>
+      </div>
+      <div class="changelog-entry">
+        <h3>2024/06/13</h3>
+        <ul><li>The latest datasets are now uploaded to Google Drive.</li></ul>
+      </div>
+      <div class="changelog-entry">
+        <h3>2024/06/06</h3>
+        <ul>
+          <li>Fixed the character corruption issue when users open <code>all_samples.csv</code> in certain applications, such as Excel, by adding a BOM.</li>
+          <li>The upload schedule to Figshare has been changed from daily to monthly.</li>
+        </ul>
+      </div>
+      <div class="changelog-entry">
+        <h3>2024/05/22</h3>
+        <ul><li>Fixed the incorrect timestamp format in the dataset. For example, corrected <code>"2024-05-17 00:00:01 JST+0900"</code> to <code>"2024-05-17 00:00:01 GMT+0900 (JST)"</code>.</li></ul>
+      </div>
+      <div class="changelog-entry">
+        <h3>2024/05/21</h3>
+        <ul>
+          <li>The values in the XY value list were originally strings enclosed in double quotations. These double quotations were removed for easier analysis.</li>
+          <li>e.g. <code>["299.8597", "324.8683"]</code> → <code>[299.8597, 324.8683]</code></li>
+        </ul>
+      </div>
+      <div class="changelog-entry">
+        <h3>2024/05/16</h3>
+        <ul><li>Added <code>updated_at</code>, <code>created_at</code>, and <code>composition_details</code> to <code>all_samples.csv</code>.</li></ul>
+      </div>
+      <div class="changelog-entry">
+        <h3>2022/12/22</h3>
+        <ul><li>The dataset location was changed from this GitHub repository to <a href="https://figshare.com/projects/Starrydata_datasets/155129" target="_blank" rel="noopener">Figshare</a>.</li></ul>
+      </div>
+    </details>
+  </section>
 
   <footer>
     Source: <a href="https://drive.google.com/drive/folders/1OVMP7j61CJFwLtJ-qZFef9ko40Othayh" target="_blank" rel="noopener">official Starrydata Google Drive</a> ·
@@ -184,7 +286,7 @@
     `).join("");
 
     document.getElementById("content").outerHTML = `
-      <table>
+      <table class="dl-table">
         <thead>
           <tr>
             <th>Project</th><th>Papers</th><th>Figures</th><th>Samples</th><th>Curves</th><th>Download</th>
