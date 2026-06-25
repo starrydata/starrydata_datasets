@@ -68,6 +68,10 @@
   footer a { color: var(--accent); text-decoration: none; }
   .err { background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); padding: 16px; border-radius: 8px; color: #fca5a5; margin: 20px 0; }
   .loading { text-align: center; color: var(--muted); padding: 40px; font-size: 14px; }
+  .stale-banner { display: none; background: rgba(239, 68, 68, 0.10); border: 1px solid rgba(239, 68, 68, 0.45); border-radius: 8px; padding: 14px 18px; margin-bottom: 20px; color: #fca5a5; font-size: 13px; line-height: 1.6; text-align: center; }
+  .stale-banner b { color: #fee2e2; font-weight: 700; }
+  .stale-banner a { color: #fbbf24; font-weight: 600; text-decoration: none; }
+  .stale-banner a:hover { color: #fde68a; text-decoration: underline; }
 </style>
 </head>
 <body>
@@ -82,6 +86,7 @@
     </div>
   </header>
 
+  <div id="stale-banner" class="stale-banner"></div>
   <div id="totals" class="totals"></div>
   <div id="content" class="loading">Loading…</div>
 
@@ -233,6 +238,28 @@
     return `<a class="dl" href="${url}" title="${meta.rows.toLocaleString()} rows, sha256:${meta.sha256.slice(0,12)}…">all_${kind}<span class="sz">${fmtBytes(meta.bytes)}</span></a>`;
   }
 
+  // Staleness check (A): the daily pipeline normally regenerates the
+  // manifest every 24 h. If it hasn't run for >30 h, the official Drive
+  // mirror may already have fresher data — surface a banner so users
+  // can self-route there.
+  const STALE_AFTER_HOURS = 30;
+  const DRIVE_URL = "https://drive.google.com/drive/folders/1OVMP7j61CJFwLtJ-qZFef9ko40Othayh";
+  function checkStaleness(manifest) {
+    const banner = document.getElementById("stale-banner");
+    if (!manifest?.generated_at) {
+      banner.innerHTML = `⚠ No build manifest available. The latest dataset is always at <a href="${DRIVE_URL}" target="_blank" rel="noopener">official Google Drive</a>.`;
+      banner.style.display = "block";
+      return;
+    }
+    const ageHours = (Date.now() - new Date(manifest.generated_at).getTime()) / 3600000;
+    if (ageHours <= STALE_AFTER_HOURS) return;
+    const ageStr = ageHours < 48
+      ? `${Math.round(ageHours)} hours`
+      : `${Math.round(ageHours / 24)} days`;
+    banner.innerHTML = `⚠ Per-project files on this page may be out of date — last refreshed <b>${ageStr} ago</b>. Always-current full dataset: <a href="${DRIVE_URL}" target="_blank" rel="noopener">official Google Drive</a>.`;
+    banner.style.display = "block";
+  }
+
   function allDataRow(counts, manifest) {
     return `
       <tr class="all-data-row">
@@ -313,6 +340,7 @@
       renderTable(counts, manifest);
       document.getElementById("snapshot").textContent = fmtDate(manifest.db_snapshot);
       document.getElementById("generated").textContent = fmtDate(manifest.generated_at);
+      checkStaleness(manifest);
     } catch (e) {
       document.getElementById("content").outerHTML =
         `<div class="err">Failed to load: ${e.message}</div>`;
