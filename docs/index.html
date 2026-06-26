@@ -24,7 +24,7 @@
   .wrap { max-width: 1100px; margin: 0 auto; }
   header { text-align: center; margin-bottom: 36px; }
   header h1 { font-size: 28px; font-weight: 700; letter-spacing: 0.5px; }
-  header p { color: var(--muted); margin-top: 8px; font-size: 14px; }
+  header p { color: var(--muted); margin-top: 8px; font-size: 16px; }
   header a { color: var(--accent); text-decoration: none; }
   header a:hover { color: var(--accent-hi); }
   .meta-row { display: flex; gap: 24px; justify-content: center; align-items: center; margin-top: 18px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
@@ -37,36 +37,39 @@
   .gh-star-card .gh-label small { display: block; font-size: 11px; font-weight: 400; color: #8b949e; margin-top: 2px; }
   .gh-star-card .github-button-wrap { display: inline-flex; align-items: center; transform: scale(1.15); transform-origin: left center; padding-left: 4px; }
   .totals { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 28px; }
-  tr.all-data-row td { background: rgba(96, 165, 250, 0.08); }
-  tr.all-data-row:hover td { background: rgba(96, 165, 250, 0.14); }
+  tr.all-data-row td { background: rgba(96, 165, 250, 0.06); }
+  tr.all-data-row:hover td { background: rgba(96, 165, 250, 0.12); }
   tr.all-data-row td.pname { color: var(--accent); }
   tr.all-data-row .dl-grid { grid-template-columns: repeat(4, 1fr); min-width: 360px; }
   .dl-drive { background: rgba(245, 158, 11, 0.12); border-color: rgba(245, 158, 11, 0.4); color: #fbbf24; }
   .dl-drive:hover { background: rgba(245, 158, 11, 0.22); border-color: #fbbf24; color: #fde68a; }
   .dl-drive .sz { color: rgba(251, 191, 36, 0.7); }
   .dl-drive:hover .sz { color: #fde68a; }
-  .totals .stat { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 14px; text-align: center; }
-  .totals .stat .n { font-size: 22px; font-weight: 700; color: var(--accent); }
-  .totals .stat .l { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
-  table { width: 100%; border-collapse: collapse; background: var(--panel); border-radius: 8px; overflow: hidden; }
-  th, td { padding: 12px 14px; font-size: 13px; border: none; vertical-align: middle; text-align: left; }
-  th { background: rgba(0,0,0,0.25); color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
-  tr:hover td { background: var(--panel-hi); }
+  .totals .stat { background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 14px 16px; text-align: center; }
+  .totals .stat .n { font-size: 24px; font-weight: 700; color: var(--accent); line-height: 1.2; }
+  .totals .stat .l { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { padding: 12px 16px; font-size: 14px; vertical-align: middle; text-align: left; white-space: nowrap; }
+  th { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: #64748b; padding: 10px 16px; border-bottom: 1px solid rgba(148, 163, 184, 0.15); }
+  td { border-bottom: 1px solid rgba(148, 163, 184, 0.07); }
+  tr:hover td { background: rgba(96, 165, 250, 0.05); }
+  tr:last-child td { border-bottom: none; }
   .dl-table th, .dl-table td { text-align: center; }
   .dl-table th:first-child, .dl-table td:first-child { text-align: left; }
   .dl-table th:nth-child(n+2):nth-child(-n+5), .dl-table td:nth-child(n+2):nth-child(-n+5) { text-align: right; font-variant-numeric: tabular-nums; }
   .pname { font-weight: 600; color: var(--text); }
   .section-block { margin-top: 36px; }
-  .section-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); margin-bottom: 12px; padding-left: 4px; }
+  .section-label { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; color: #64748b; margin-bottom: 20px; padding-left: 4px; }
   .repos-table td:nth-child(n+2) { color: var(--muted); }
   .repos-table a { color: var(--accent); text-decoration: none; font-weight: 600; }
   .repos-table a:hover { color: var(--accent-hi); }
-  .changelog-box { background: var(--panel); border-radius: 8px; padding: 4px 18px 18px; }
-  .changelog-box summary { cursor: pointer; padding: 12px 0; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; user-select: none; }
+  .changelog-box { padding: 0 4px; }
+  .changelog-box summary { cursor: pointer; padding: 12px 0; font-size: 13px; color: #64748b; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; user-select: none; }
   .changelog-box summary:hover { color: var(--text); }
-  .changelog-entry { margin-top: 14px; }
-  .changelog-entry h3 { font-size: 13px; color: var(--accent); font-weight: 600; margin-bottom: 6px; letter-spacing: 0.3px; }
-  .changelog-entry ul { list-style: disc; margin-left: 22px; color: var(--muted); font-size: 13px; line-height: 1.75; }
+  .changelog-entry { margin-top: 18px; padding-bottom: 14px; border-bottom: 1px solid rgba(148, 163, 184, 0.07); }
+  .changelog-entry:last-child { border-bottom: none; }
+  .changelog-entry h3 { font-size: 14px; color: var(--accent); font-weight: 600; margin-bottom: 8px; letter-spacing: 0.3px; }
+  .changelog-entry ul { list-style: disc; margin-left: 22px; color: #cbd5e1; font-size: 14px; line-height: 1.75; }
   .changelog-entry ul a { color: var(--accent); text-decoration: none; }
   .changelog-entry ul a:hover { text-decoration: underline; }
   .changelog-entry code { background: rgba(96, 165, 250, 0.12); padding: 1px 6px; border-radius: 3px; font-size: 12px; }
