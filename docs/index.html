@@ -73,9 +73,9 @@
   .changelog-entry ul a { color: var(--accent); text-decoration: none; }
   .changelog-entry ul a:hover { text-decoration: underline; }
   .changelog-entry code { background: rgba(96, 165, 250, 0.12); padding: 1px 6px; border-radius: 3px; font-size: 12px; }
-  .dl { display: flex; align-items: center; justify-content: center; gap: 4px; padding: 6px 10px; background: rgba(96, 165, 250, 0.12); border: 1px solid rgba(96, 165, 250, 0.3); border-radius: 4px; color: var(--accent); text-decoration: none; font-size: 11px; font-weight: 600; transition: all 0.15s ease; white-space: nowrap; }
+  .dl { display: flex; align-items: center; justify-content: center; gap: 5px; padding: 7px 12px; background: rgba(96, 165, 250, 0.12); border: 1px solid rgba(96, 165, 250, 0.3); border-radius: 4px; color: var(--accent); text-decoration: none; font-size: 13px; font-weight: 600; transition: all 0.15s ease; white-space: nowrap; }
   .dl:hover { background: rgba(96, 165, 250, 0.25); border-color: var(--accent); color: var(--accent-hi); }
-  .dl .sz { font-weight: 400; color: var(--muted); font-size: 10px; }
+  .dl .sz { font-weight: 400; color: var(--muted); font-size: 11px; }
   .dl:hover .sz { color: var(--accent-hi); }
   .dl-cell { min-width: 280px; }
   .dl-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
@@ -237,8 +237,10 @@
   const fmtBytes = (b) => {
     if (b == null) return "";
     if (b < 1024) return `${b} B`;
-    if (b < 1024 * 1024) return `${(b / 1024).toFixed(0)} KB`;
-    return `${(b / 1024 / 1024).toFixed(1)} MB`;
+    const kb = b / 1024;
+    // Roll over to MB once KB would be 4 digits, so 1014 KB → "1.0 MB".
+    if (kb < 1000) return `${kb.toFixed(0)} KB`;
+    return `${(kb / 1024).toFixed(1)} MB`;
   };
   const TZ_LIST = [
     { tz: "UTC", label: "UTC" },
