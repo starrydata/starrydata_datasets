@@ -227,7 +227,6 @@
   const REPO_OWNER = "starrydata";
   const REPO_NAME = "starrydata_datasets";
 
-  const COUNTS_URL = "https://starrydata.github.io/json/counts.json";
   const MANIFEST_URL = "./manifest.json";
   const RELEASE_BASE = `https://github.com/${REPO_OWNER}/${REPO_NAME}/releases/latest/download`;
   const REPO_URL = `https://github.com/${REPO_OWNER}/${REPO_NAME}`;
@@ -296,23 +295,27 @@
     banner.style.display = "block";
   }
 
-  function allDataRow(counts, manifest) {
+  const projectCounts = (entry) => entry?.counts ?? {};
+
+  function allDataRow(manifest) {
+    const totals = manifest?.totals ?? {};
     const driveBtn = `<a class="dl dl-drive" href="${DRIVE_URL}" target="_blank" rel="noopener" title="Always-current full zip mirrored from the official Starrydata Google Drive">Drive zip<span class="sz">always fresh</span></a>`;
     return `
       <tr class="all-data-row">
         <td class="pname">All projects (whole dataset)</td>
-        <td>${fmtNum(counts.papers ?? 0)}</td>
-        <td>${fmtNum(counts.figures ?? 0)}</td>
-        <td>${fmtNum(counts.samples ?? 0)}</td>
-        <td>${fmtNum(counts.curves ?? 0)}</td>
+        <td>${fmtNum(totals.papers ?? 0)}</td>
+        <td>${fmtNum(totals.figures ?? 0)}</td>
+        <td>${fmtNum(totals.samples ?? 0)}</td>
+        <td>${fmtNum(totals.curves ?? 0)}</td>
         <td class="dl-cell"><div class="dl-grid">${allDlButton("papers", manifest)}${allDlButton("samples", manifest)}${allDlButton("curves", manifest)}${driveBtn}</div></td>
       </tr>
     `;
   }
 
-  function renderTotals(counts) {
+  function renderTotals(manifest) {
+    const totals = manifest?.totals ?? {};
     const html = ["papers", "figures", "samples", "curves"].map((k) =>
-      `<div class="stat"><div class="n">${fmtNum(counts[k] ?? 0)}</div><div class="l">${k}</div></div>`
+      `<div class="stat"><div class="n">${fmtNum(totals[k] ?? 0)}</div><div class="l">${k}</div></div>`
     ).join("");
     document.getElementById("totals").innerHTML = html;
   }
@@ -325,11 +328,12 @@
     return `<a class="dl" href="${url}" title="${meta.rows.toLocaleString()} rows, sha256:${meta.sha256.slice(0,12)}…">${kind}<span class="sz">${fmtBytes(meta.bytes)}</span></a>`;
   }
 
-  function renderTable(counts, manifest) {
+  function renderTable(manifest) {
     // Sort by curves desc, but keep Battery-family projects adjacent
     // (anchored to the largest battery's natural position).
     const isBattery = (n) => /Battery/.test(n);
-    const all = Object.entries(counts.projects ?? {});
+    const all = Object.entries(manifest?.projects ?? {})
+      .map(([name, entry]) => [name, projectCounts(entry), entry]);
     const batteryCurves = all.filter(([n]) => isBattery(n)).map(([, c]) => c.curves ?? 0);
     const batteryAnchor = batteryCurves.length ? Math.max(...batteryCurves) : -Infinity;
     const keyOf = ([name, c]) => isBattery(name) ? batteryAnchor : (c.curves ?? 0);
@@ -356,7 +360,7 @@
             <th>Project</th><th>Papers</th><th>Figures</th><th>Samples</th><th>Curves</th><th>Download</th>
           </tr>
         </thead>
-        <tbody>${allDataRow(counts, manifest)}${rows}</tbody>
+        <tbody>${allDataRow(manifest)}${rows}</tbody>
       </table>
     `;
   }
@@ -369,12 +373,9 @@
 
   (async function () {
     try {
-      const [counts, manifest] = await Promise.all([
-        fetchJSON(COUNTS_URL),
-        fetchJSON(MANIFEST_URL).catch(() => ({ projects: {} })),
-      ]);
-      renderTotals(counts);
-      renderTable(counts, manifest);
+      const manifest = await fetchJSON(MANIFEST_URL);
+      renderTotals(manifest);
+      renderTable(manifest);
       document.getElementById("snapshot").textContent = fmtDate(manifest.db_snapshot);
       document.getElementById("generated").textContent = fmtDate(manifest.generated_at);
       checkStaleness(manifest);
