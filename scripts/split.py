@@ -83,6 +83,16 @@ def split(zip_path: Path, out_dir: Path) -> dict:
     projects_sorted = sorted(all_projects)
     print(f"[info] {len(projects_sorted)} projects detected from curves", file=sys.stderr)
 
+    def _nunique_nonempty(series: pd.Series) -> int:
+        return int(series[series != ""].nunique())
+
+    totals = {
+        "papers": _nunique_nonempty(curves["SID"]),
+        "figures": _nunique_nonempty(curves["figure_id"]) if "figure_id" in curves.columns else 0,
+        "samples": int(len(samples)),
+        "curves": int(len(curves)),
+    }
+
     out_data = out_dir / "data"
     if out_data.exists():
         shutil.rmtree(out_data)
@@ -126,8 +136,15 @@ def split(zip_path: Path, out_dir: Path) -> dict:
                 "bytes": size,
                 "sha256": sha256(fpath),
             }
+        project_figures = _nunique_nonempty(c_sub["figure_id"]) if "figure_id" in c_sub.columns else 0
+        files["counts"] = {
+            "papers": int(len(p_sub)),
+            "figures": project_figures,
+            "samples": int(len(s_sub)),
+            "curves": int(len(c_sub)),
+        }
         print(
-            f"[done] {project:40} papers={len(p_sub):6} samples={len(s_sub):6} curves={len(c_sub):7}",
+            f"[done] {project:40} papers={len(p_sub):6} figures={project_figures:6} samples={len(s_sub):6} curves={len(c_sub):7}",
             file=sys.stderr,
         )
         manifest[project] = files
@@ -136,6 +153,7 @@ def split(zip_path: Path, out_dir: Path) -> dict:
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "db_snapshot": snapshot,
         "source_zip": zip_path.name,
+        "totals": totals,
         "all_data": all_data,
         "projects": manifest,
     }
