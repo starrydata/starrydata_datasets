@@ -48,7 +48,7 @@ def project_names_of(value: object) -> list[str]:
 
 def gzip_write(df: pd.DataFrame, dest: Path) -> int:
     dest.parent.mkdir(parents=True, exist_ok=True)
-    df.to_csv(dest, index=False, compression="gzip")
+    df.to_csv(dest, index=False, compression="gzip", encoding="utf-8-sig")
     return dest.stat().st_size
 
 
