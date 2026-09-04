@@ -1,6 +1,4 @@
-[IMPORTANT]
-
-**Duplicated `sample_id` in datasets published between 2026-04-01 and 2026-09-04**
+## [IMPORTANT] **Duplicated `sample_id` in datasets published between 2026-04-01 and 2026-09-04**
 
 In these datasets the same `sample_id` can refer to samples belonging to **different papers**. Joining tables on `sample_id` alone will mix data from unrelated papers.
 
