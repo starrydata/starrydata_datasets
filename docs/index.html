@@ -159,6 +159,20 @@
     <details class="changelog-box" open>
       <summary>Changelog</summary>
       <div class="changelog-entry">
+        <h3>2026/09/04</h3>
+        <ul>
+          <li><strong>[IMPORTANT]</strong> Datasets published between 2026-04-01 and 2026-09-04 contain duplicated <code>sample_id</code> values — the same <code>sample_id</code> can refer to samples from different papers. Joining tables on <code>sample_id</code> alone will mix unrelated data. <strong>Workaround:</strong> join on <code>(SID, sample_id)</code>, which is unique. A corrected dataset (<code>starrydata_dataset_renumbered.zip</code>) is available on <a href="https://drive.google.com/drive/folders/1OVMP7j61CJFwLtJ-qZFef9ko40Othayh" target="_blank" rel="noopener">Google Drive</a>. The live database will be fixed in the week beginning 2026-09-07; datasets published after that date already include the fix.</li>
+        </ul>
+      </div>
+      <div class="changelog-entry">
+        <h3>2026/09/01</h3>
+        <ul><li>Added UTF-8 BOM to all CSV outputs so files open correctly in Excel without character corruption.</li></ul>
+      </div>
+      <div class="changelog-entry">
+        <h3>2026/07/17</h3>
+        <ul><li>Rebuilt the Pages listing and Starrydata <code>links</code> page to read directly from this repo's daily <code>manifest.json</code>. New projects (e.g. <code>OrganicThermoelectricMaterials</code>) now appear the day they're added to the DB, instead of waiting for the monthly Figshare mirror. Added <code>totals</code> and per-project <code>counts</code> (including <code>figures</code>) to <code>manifest.json</code>.</li></ul>
+      </div>
+      <div class="changelog-entry">
         <h3>2026/06/26</h3>
         <ul>
           <li>Added per-project dataset downloads at <a href="https://starrydata.github.io/starrydata_datasets/" target="_blank" rel="noopener">starrydata.github.io/starrydata_datasets</a>. Each project (<code>ThermoelectricMaterials</code>, <code>BatteryMaterials</code>, <code>MagneticMaterials</code>, etc.) can now be downloaded separately as <code>papers</code> / <code>samples</code> / <code>curves</code> files, alongside the full unsplit dataset.</li>

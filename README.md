@@ -152,6 +152,12 @@ docs/
 
 ## Changelog
 
+### 2026/09/04
+- **[IMPORTANT]** Datasets published between 2026-04-01 and 2026-09-04 contain duplicated `sample_id` values — the same `sample_id` can refer to samples from different papers. Joining tables on `sample_id` alone will mix unrelated data. **Workaround:** join on `(SID, sample_id)`, which is unique. A corrected dataset (`starrydata_dataset_renumbered.zip`) is available on [Google Drive](https://drive.google.com/drive/folders/1OVMP7j61CJFwLtJ-qZFef9ko40Othayh). The live database will be fixed in the week beginning 2026-09-07; datasets published after that date already include the fix.
+
+### 2026/09/01
+- Added UTF-8 BOM to all CSV outputs so files open correctly in Excel without character corruption.
+
 ### 2026/07/17
 - Rebuilt the Pages listing and Starrydata `links` page to read directly from this repo's daily `manifest.json`. New projects (e.g. `OrganicThermoelectricMaterials`) now appear the day they're added to the DB, instead of waiting for the monthly Figshare mirror. Added `totals` and per-project `counts` (including `figures`) to `manifest.json`.
 
