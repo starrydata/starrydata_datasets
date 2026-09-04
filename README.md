@@ -1,19 +1,19 @@
-NOTICE (2026-09-04): duplicated sample_id in datasets published between 2026-04-01
-and 2026-09-04
+[IMPORTANT]
 
-In these datasets the same sample_id can refer to samples belonging to different
-papers, so joining tables on sample_id alone will mix data from unrelated papers.
-As a workaround you can join on the pair (SID, sample_id), which is unique.
+**Duplicated `sample_id` in datasets published between 2026-04-01 and 2026-09-04**
 
-A corrected dataset, in which sample_id, figure_id and SID are all unique, is
-available here:
-https://drive.google.com/drive/folders/1OVMP7j61CJFwLtJ-qZFef9ko40Othayh
- -> starrydata_dataset_renumbered.zip
+In these datasets the same `sample_id` can refer to samples belonging to **different papers**. Joining tables on `sample_id` alone will mix data from unrelated papers.
 
-Identifiers that originated in the public Starrydata database were not changed,
-so existing analyses using those values remain valid. The fix will be applied to
-the live database in the week beginning 2026-09-07, and archives published after
-that date will already include it.
+**Workaround:**
+
+join on the pair `(SID, sample_id)`, which is unique.
+
+**Corrected dataset:**
+
+every `sample_id`, `figure_id` and `SID` is unique in [`starrydata_dataset_renumbered.zip`](https://drive.google.com/drive/folders/1OVMP7j61CJFwLtJ-qZFef9ko40Othayh) on Google Drive.
+
+Identifiers that originated in the public Starrydata database were **not changed**, so existing analyses using those values remain valid. The fix will be applied to the live database in the week beginning 2026-09-07; datasets published after that date already include it.
+
 
 # starrydata_datasets
 
