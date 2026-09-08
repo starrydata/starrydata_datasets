@@ -1,17 +1,25 @@
-## [IMPORTANT] **Duplicated `sample_id` in datasets published between 2026-04-01 and 2026-09-04**
-
-In these datasets the same `sample_id` can refer to samples belonging to **different papers**. Joining tables on `sample_id` alone will mix data from unrelated papers.
-
-**Workaround:**
-
-join on the pair `(SID, sample_id)`, which is unique.
-
-**Corrected dataset:**
-
-every `sample_id`, `figure_id` and `SID` is unique in [`starrydata_dataset_renumbered.zip`](https://drive.google.com/drive/folders/1OVMP7j61CJFwLtJ-qZFef9ko40Othayh) on Google Drive.
-
-Identifiers that originated in the public Starrydata database were **not changed**, so existing analyses using those values remain valid. The fix will be applied to the live database in the week beginning 2026-09-07; datasets published after that date already include it.
-
+> [!NOTE]
+> **The duplicated `sample_id` issue was fixed on 2026-09-08**
+>
+> Datasets published between **2026-04-01 and 2026-09-08** contain duplicated
+> `sample_id` values: the same `sample_id` can refer to samples belonging to
+> **different papers**. Joining tables on `sample_id` alone mixes data from
+> unrelated papers. In the 2026-09-03 snapshot, 10.4% of `sample_id` values
+> were affected.
+>
+> **If you are using a dataset from that period, please replace it.** If you
+> cannot, join on the pair `(SID, sample_id)`, which is unique even in the
+> affected copies. The same applies to `(SID, figure_id)`.
+>
+> Google Drive and the GitHub Releases of this repository are already corrected.
+> Monthly archives on Figshare will include the fix from **2026-10-01**.
+>
+> Identifiers that originated in the public Starrydata database were **not
+> changed**, so existing analyses using those values remain valid. Only
+> identifiers imported from internal databases were reassigned, and uniqueness
+> constraints have been added to the database so that this cannot recur.
+>
+> Questions: MATO.Tomoya@nims.go.jp
 
 # starrydata_datasets
 
