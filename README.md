@@ -1,17 +1,25 @@
-## [IMPORTANT] **Duplicated `sample_id` in datasets published between 2026-04-01 and 2026-09-04**
-
-In these datasets the same `sample_id` can refer to samples belonging to **different papers**. Joining tables on `sample_id` alone will mix data from unrelated papers.
-
-**Workaround:**
-
-join on the pair `(SID, sample_id)`, which is unique.
-
-**Corrected dataset:**
-
-every `sample_id`, `figure_id` and `SID` is unique in [`starrydata_dataset_renumbered.zip`](https://drive.google.com/drive/folders/1OVMP7j61CJFwLtJ-qZFef9ko40Othayh) on Google Drive.
-
-Identifiers that originated in the public Starrydata database were **not changed**, so existing analyses using those values remain valid. The fix will be applied to the live database in the week beginning 2026-09-07; datasets published after that date already include it.
-
+> [!NOTE]
+> **The duplicated `sample_id` issue was fixed on 2026-09-08**
+>
+> Datasets published between **2026-04-01 and 2026-09-08** contain duplicated
+> `sample_id` values: the same `sample_id` can refer to samples belonging to
+> **different papers**. Joining tables on `sample_id` alone mixes data from
+> unrelated papers. In the 2026-09-03 snapshot, 10.4% of `sample_id` values
+> were affected.
+>
+> **If you are using a dataset from that period, please replace it.** If you
+> cannot, join on the pair `(SID, sample_id)`, which is unique even in the
+> affected copies. The same applies to `(SID, figure_id)`.
+>
+> Google Drive and the GitHub Releases of this repository are already corrected.
+> Monthly archives on Figshare will include the fix from **2026-10-01**.
+>
+> Identifiers that originated in the public Starrydata database were **not
+> changed**, so existing analyses using those values remain valid. Only
+> identifiers imported from internal databases were reassigned, and uniqueness
+> constraints have been added to the database so that this cannot recur.
+>
+> Questions: MATO.Tomoya@nims.go.jp
 
 # starrydata_datasets
 
@@ -23,10 +31,14 @@ Historically this repository also hosted the raw CSVs (from 2019/7/11 until 2022
 
 | Repository | Description | Update schedule | Period |
 |------------|-------------|-----------------|--------|
-| [Google Drive](https://drive.google.com/drive/folders/1OVMP7j61CJFwLtJ-qZFef9ko40Othayh) | Latest full dataset (single ZIP) | Twice daily at 00:00 and 12:00 JST | from 2024/06/13 |
+| [Google Drive](https://drive.google.com/drive/folders/1OVMP7j61CJFwLtJ-qZFef9ko40Othayh) | Latest full dataset (single ZIP) | Daily at 02:00 JST | from 2024/06/13 |
 | [GitHub Releases (this repo)](https://github.com/starrydata/starrydata_datasets/releases) | Per-project splits + full dataset, as `.csv.gz` | Daily around 03:00 JST | from 2026/06/25 |
-| [Figshare](https://figshare.com/projects/Starrydata_datasets/155129) | Archival snapshots | Daily until 2024/06/06, then monthly | from 2022/12/22 |
+| [Figshare](https://figshare.com/projects/Starrydata_datasets/155129) | Archival snapshots | Monthly, on the 1st at 04:00 JST | from 2022/12/22 |
 | [GitHub tags (this repo)](https://github.com/starrydata/starrydata_datasets/tags) | Legacy snapshots | As needed | 2019/7/11 – 2022/12/22 |
+
+All schedules above are driven by cron jobs on the batch server. The Google Drive
+upload happens at the end of the 02:00 dataset job, so the ZIP is usually in place
+well before the 03:00 split workflow of this repository runs.
 
 ## What this repository does
 
@@ -152,8 +164,15 @@ docs/
 
 ## Changelog
 
+### 2026/09/08
+- **Fixed the duplicated `sample_id` issue.** Integer identifiers (`sample_id`, `figure_id` and `SID`) are now unique across the whole database. Verified on the 2026-09-08 15:49 snapshot: 105,999 samples with 105,999 distinct `sample_id`, 56,489 papers with 56,489 distinct `SID`, and no `sample_id` or `figure_id` in `starrydata_curves.csv` referring to more than one paper.
+- Identifiers that originated in the public database were **not changed**, so existing analyses using those values remain valid. Only identifiers imported from internal databases were reassigned. Uniqueness constraints were added to the database so that this cannot recur.
+- Google Drive and the GitHub Releases of this repository are corrected as of this date. Figshare archives will include the fix from the monthly upload on **2026-10-01**.
+- The interim `starrydata_dataset_renumbered.zip` on Google Drive has been removed; use the regular `starrydata_dataset.zip`.
+
 ### 2026/09/04
-- **[IMPORTANT]** Datasets published between 2026-04-01 and 2026-09-04 contain duplicated `sample_id` values — the same `sample_id` can refer to samples from different papers. Joining tables on `sample_id` alone will mix unrelated data. **Workaround:** join on `(SID, sample_id)`, which is unique. A corrected dataset (`starrydata_dataset_renumbered.zip`) is available on [Google Drive](https://drive.google.com/drive/folders/1OVMP7j61CJFwLtJ-qZFef9ko40Othayh). The live database will be fixed in the week beginning 2026-09-07; datasets published after that date already include the fix.
+- **[IMPORTANT]** Datasets published between 2026-04-01 and 2026-09-08 contain duplicated `sample_id` values — the same `sample_id` can refer to samples from different papers. Joining tables on `sample_id` alone will mix unrelated data. **Workaround:** join on `(SID, sample_id)`, which is unique; the same applies to `(SID, figure_id)`. In the 2026-09-03 snapshot, 10.4% of `sample_id` values were affected. Fixed on 2026-09-08 (see above).
+- Cause: on 2026-03-31 several internal databases were merged into the public database. Paper identifiers (`SID`) were reassigned correctly, but `sample_id` and `figure_id` were carried over from the source databases without reassignment, so they collided with identifiers already in use. The underlying data was never corrupted — curves reference samples and figures by object ID internally, so the problem appeared only in the exported CSV files, where the integer identifiers serve as join keys.
 
 ### 2026/09/01
 - Added UTF-8 BOM to all CSV outputs so files open correctly in Excel without character corruption.
