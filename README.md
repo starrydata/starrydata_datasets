@@ -164,8 +164,15 @@ docs/
 
 ## Changelog
 
+### 2026/09/08
+- **Fixed the duplicated `sample_id` issue.** Integer identifiers (`sample_id`, `figure_id` and `SID`) are now unique across the whole database. Verified on the 2026-09-08 15:49 snapshot: 105,999 samples with 105,999 distinct `sample_id`, 56,489 papers with 56,489 distinct `SID`, and no `sample_id` or `figure_id` in `starrydata_curves.csv` referring to more than one paper.
+- Identifiers that originated in the public database were **not changed**, so existing analyses using those values remain valid. Only identifiers imported from internal databases were reassigned. Uniqueness constraints were added to the database so that this cannot recur.
+- Google Drive and the GitHub Releases of this repository are corrected as of this date. Figshare archives will include the fix from the monthly upload on **2026-10-01**.
+- The interim `starrydata_dataset_renumbered.zip` on Google Drive has been removed; use the regular `starrydata_dataset.zip`.
+
 ### 2026/09/04
-- **[IMPORTANT]** Datasets published between 2026-04-01 and 2026-09-04 contain duplicated `sample_id` values — the same `sample_id` can refer to samples from different papers. Joining tables on `sample_id` alone will mix unrelated data. **Workaround:** join on `(SID, sample_id)`, which is unique. A corrected dataset (`starrydata_dataset_renumbered.zip`) is available on [Google Drive](https://drive.google.com/drive/folders/1OVMP7j61CJFwLtJ-qZFef9ko40Othayh). The live database will be fixed in the week beginning 2026-09-07; datasets published after that date already include the fix.
+- **[IMPORTANT]** Datasets published between 2026-04-01 and 2026-09-08 contain duplicated `sample_id` values — the same `sample_id` can refer to samples from different papers. Joining tables on `sample_id` alone will mix unrelated data. **Workaround:** join on `(SID, sample_id)`, which is unique; the same applies to `(SID, figure_id)`. In the 2026-09-03 snapshot, 10.4% of `sample_id` values were affected. Fixed on 2026-09-08 (see above).
+- Cause: on 2026-03-31 several internal databases were merged into the public database. Paper identifiers (`SID`) were reassigned correctly, but `sample_id` and `figure_id` were carried over from the source databases without reassignment, so they collided with identifiers already in use. The underlying data was never corrupted — curves reference samples and figures by object ID internally, so the problem appeared only in the exported CSV files, where the integer identifiers serve as join keys.
 
 ### 2026/09/01
 - Added UTF-8 BOM to all CSV outputs so files open correctly in Excel without character corruption.
