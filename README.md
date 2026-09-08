@@ -31,10 +31,14 @@ Historically this repository also hosted the raw CSVs (from 2019/7/11 until 2022
 
 | Repository | Description | Update schedule | Period |
 |------------|-------------|-----------------|--------|
-| [Google Drive](https://drive.google.com/drive/folders/1OVMP7j61CJFwLtJ-qZFef9ko40Othayh) | Latest full dataset (single ZIP) | Twice daily at 00:00 and 12:00 JST | from 2024/06/13 |
+| [Google Drive](https://drive.google.com/drive/folders/1OVMP7j61CJFwLtJ-qZFef9ko40Othayh) | Latest full dataset (single ZIP) | Daily at 02:00 JST | from 2024/06/13 |
 | [GitHub Releases (this repo)](https://github.com/starrydata/starrydata_datasets/releases) | Per-project splits + full dataset, as `.csv.gz` | Daily around 03:00 JST | from 2026/06/25 |
-| [Figshare](https://figshare.com/projects/Starrydata_datasets/155129) | Archival snapshots | Daily until 2024/06/06, then monthly | from 2022/12/22 |
+| [Figshare](https://figshare.com/projects/Starrydata_datasets/155129) | Archival snapshots | Monthly, on the 1st at 04:00 JST | from 2022/12/22 |
 | [GitHub tags (this repo)](https://github.com/starrydata/starrydata_datasets/tags) | Legacy snapshots | As needed | 2019/7/11 – 2022/12/22 |
+
+All schedules above are driven by cron jobs on the batch server. The Google Drive
+upload happens at the end of the 02:00 dataset job, so the ZIP is usually in place
+well before the 03:00 split workflow of this repository runs.
 
 ## What this repository does
 
