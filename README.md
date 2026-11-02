@@ -40,6 +40,29 @@ All schedules above are driven by cron jobs on the batch server. The Google Driv
 upload happens at the end of the 02:00 dataset job, so the ZIP is usually in place
 well before the 03:00 split workflow of this repository runs.
 
+## License
+
+The datasets distributed from all of the locations above are licensed under the
+[Creative Commons Attribution 4.0 International License (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/).
+The full text is in [`LICENSE`](LICENSE). This is the same licence already shown on the Figshare snapshots.
+
+You may use, share and adapt the data for any purpose, including commercial use, and you may
+redistribute cleaned or derived versions, as long as you give appropriate credit (see below),
+provide a link to the licence, and indicate if changes were made.
+
+## How to cite
+
+When you use the data, please cite both:
+
+1. The Starrydata paper:
+   Y. Katsura, M. Kumagai, T. Mato, et al., "Starrydata: from published plots to shared materials data",
+   *Science and Technology of Advanced Materials: Methods* **5**(1), 2506976 (2025).
+   https://doi.org/10.1080/27660400.2025.2506976
+2. The original publications the data were taken from. `all_papers.csv.gz` (and each `<Project>_papers.csv.gz`)
+   lists them with `DOI`, `author`, `title` and other bibliographic fields; curves and samples link to them by `SID`.
+
+If you use a Figshare snapshot, please also cite its DOI so that others can obtain the same version.
+
 ## What this repository does
 
 Every day the `Daily split & release` workflow:
@@ -163,6 +186,9 @@ docs/
 ```
 
 ## Changelog
+
+### 2026/10/28
+- Stated the licence of the datasets (CC BY 4.0, the same as on Figshare) and added `LICENSE` and a "How to cite" section.
 
 ### 2026/09/08
 - **Fixed the duplicated `sample_id` issue.** Integer identifiers (`sample_id`, `figure_id` and `SID`) are now unique across the whole database. Verified on the 2026-09-08 15:49 snapshot: 105,999 samples with 105,999 distinct `sample_id`, 56,489 papers with 56,489 distinct `SID`, and no `sample_id` or `figure_id` in `starrydata_curves.csv` referring to more than one paper.
